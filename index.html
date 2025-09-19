@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Background Animations - Interactive Demo</title>
+		<link
+			rel="icon"
+			href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌈</text></svg>"
+		/>
+		<meta
+			name="description"
+			content="Interactive demo for WebGL2 background animations library. Test effects, tweak parameters, and see usage examples."
+		/>
+		<link rel="stylesheet" href="./demo/style.css" />
+	</head>
+	<body>
+		<!-- Theme Toggle -->
+		<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+			<div class="toggle-inner">
+				<div class="toggle-icon">🌙</div>
+			</div>
+		</button>
+
+		<!-- Header -->
+		<header class="header">
+			<div class="header-content">
+				<h1 class="title">
+					<span class="title-gradient">Background Animations</span>
+				</h1>
+				<p class="subtitle">Interactive Demo & Playground</p>
+				<div class="header-links">
+					<a
+						href="https://github.com/gaomeng1900/background-animations"
+						target="_blank"
+						class="link"
+					>
+						📚 Documentation
+					</a>
+					<a
+						href="https://www.npmjs.com/package/background-animations"
+						target="_blank"
+						class="link"
+					>
+						📦 NPM Package
+					</a>
+				</div>
+			</div>
+		</header>
+
+		<!-- Main Content -->
+		<main class="main">
+			<!-- Effects Grid -->
+			<section class="section">
+				<h2 class="section-title">Available Effects</h2>
+				<div class="effect-grid" id="effectGrid">
+					<!-- Effects will be rendered here by demo.ts -->
+				</div>
+			</section>
+
+			<!-- Demo Area -->
+			<section class="section">
+				<div class="demo-layout">
+					<!-- Preview -->
+					<div class="demo-preview">
+						<h3 class="demo-title">Live Preview</h3>
+						<div class="preview-container" id="previewContainer">
+							<!-- Main effect preview will be rendered here -->
+						</div>
+					</div>
+
+					<!-- Controls -->
+					<div class="demo-controls">
+						<h3 class="demo-title">Parameters</h3>
+						<div class="controls-container" id="controlsContainer">
+							<!-- Controls will be rendered here by demo.ts -->
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Code Example -->
+			<section class="section">
+				<h2 class="section-title">Usage Example</h2>
+				<div class="code-container" id="codeContainer">
+					<!-- Code examples will be rendered here by demo.ts -->
+				</div>
+			</section>
+		</main>
+
+		<!-- Footer -->
+		<footer class="footer">
+			<div class="footer-content">
+				<p>
+					Made with ❤️ by
+					<a href="https://github.com/gaomeng1900" target="_blank" class="footer-link">Simon</a>
+				</p>
+				<p class="footer-note">
+					WebGL2 animated background effects. Zero dependencies, modern browsers only.
+				</p>
+			</div>
+		</footer>
+
+		<script type="module" src="./demo/demo.ts"></script>
+	</body>
+</html>

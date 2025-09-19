@@ -1,0 +1,24 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"strict": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitOverride": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": false,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"useDefineForClassFields": true,
+		"isolatedModules": true,
+		"lib": ["ES2020", "DOM", "DOM.Iterable"],
+		"types": [],
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
+		"outDir": "build"
+	},
+	"include": ["src/**/*.ts"],
+	"exclude": ["src/**/__*.ts"]
+}
