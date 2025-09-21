@@ -26,6 +26,7 @@ class Demo {
 
 	constructor() {
 		this.init()
+		this.setupUrlHandling()
 	}
 
 	private init(): void {
@@ -33,10 +34,8 @@ class Demo {
 		this.renderEffectGrid()
 		this.setupEventListeners()
 
-		// Load first effect by default
-		if (effectsConfig.length > 0) {
-			this.selectEffect(effectsConfig[0])
-		}
+		// Load effect from URL or default to first
+		this.loadEffectFromUrl()
 	}
 
 	private setupTheme(): void {
@@ -115,13 +114,19 @@ class Demo {
 		}
 
 		this.state.currentEffect = config
-		this.state.parameters = this.getDefaultParameters(config)
+		// Only reset parameters if they weren't already set (e.g., from URL)
+		if (Object.keys(this.state.parameters).length === 0) {
+			this.state.parameters = this.getDefaultParameters(config)
+		}
 
 		// Update UI
 		this.updateActiveCard(config)
 		this.renderMainPreview(config)
 		this.renderControls(config)
 		this.renderCode(config)
+
+		// Update URL
+		this.updateUrl()
 	}
 
 	private getDefaultParameters(config: EffectConfig): Record<string, any> {
@@ -293,15 +298,17 @@ class Demo {
 	}
 
 	private renderControlInput(param: any): string {
+		const currentValue = this.state.parameters[param.name] ?? param.default
+
 		switch (param.type) {
 			case 'color':
-				return `<input type="color" value="${param.default}" data-param="${param.name}" class="control-input control-color">`
+				return `<input type="color" value="${currentValue}" data-param="${param.name}" class="control-input control-color">`
 			case 'number':
-				return `<input type="range" min="${param.min || 0}" max="${param.max || 100}" step="${param.step || 1}" value="${param.default}" data-param="${param.name}" class="control-input control-range">`
+				return `<input type="range" min="${param.min || 0}" max="${param.max || 100}" step="${param.step || 1}" value="${currentValue}" data-param="${param.name}" class="control-input control-range">`
 			case 'boolean':
-				return `<input type="checkbox" ${param.default ? 'checked' : ''} data-param="${param.name}" class="control-input control-checkbox">`
+				return `<input type="checkbox" ${currentValue ? 'checked' : ''} data-param="${param.name}" class="control-input control-checkbox">`
 			default:
-				return `<input type="text" value="${param.default}" data-param="${param.name}" class="control-input control-text">`
+				return `<input type="text" value="${currentValue}" data-param="${param.name}" class="control-input control-text">`
 		}
 	}
 
@@ -313,12 +320,14 @@ class Demo {
 			const options = this.buildEffectOptions(this.state.currentEffect)
 			this.state.currentInstance.updateOptions(options)
 			this.renderCode(this.state.currentEffect)
-			return
+		} else {
+			// Fallback: recreate effect with new parameters
+			this.renderMainPreview(this.state.currentEffect)
+			this.renderCode(this.state.currentEffect)
 		}
 
-		// Fallback: recreate effect with new parameters
-		this.renderMainPreview(this.state.currentEffect)
-		this.renderCode(this.state.currentEffect)
+		// Update URL with new parameters
+		this.updateUrl()
 	}
 
 	private renderCode(config: EffectConfig): void {
@@ -342,6 +351,59 @@ class Demo {
 		const div = document.createElement('div')
 		div.textContent = text
 		return div.innerHTML
+	}
+
+	private setupUrlHandling(): void {
+		// Handle browser back/forward navigation
+		window.addEventListener('popstate', () => {
+			this.loadEffectFromUrl()
+		})
+	}
+
+	private loadEffectFromUrl(): void {
+		const urlParams = new URLSearchParams(window.location.search)
+		const effectName = urlParams.get('effect')
+
+		if (effectName) {
+			const config = effectsConfig.find((c) => c.name === effectName)
+			if (config) {
+				// Load parameters from URL
+				const urlParameters: Record<string, any> = {}
+				config.parameters?.forEach((param) => {
+					const value = urlParams.get(param.name)
+					if (value !== null) {
+						urlParameters[param.name] = value
+					}
+				})
+
+				// Override default parameters with URL parameters
+				this.state.parameters = { ...this.getDefaultParameters(config), ...urlParameters }
+				this.selectEffect(config)
+				return
+			}
+		}
+
+		// Fallback to first effect if no valid URL effect found
+		if (effectsConfig.length > 0) {
+			this.selectEffect(effectsConfig[0])
+		}
+	}
+
+	private updateUrl(): void {
+		if (!this.state.currentEffect) return
+
+		const urlParams = new URLSearchParams()
+		urlParams.set('effect', this.state.currentEffect.name)
+
+		// Add effect parameters to URL
+		Object.entries(this.state.parameters).forEach(([key, value]) => {
+			if (value !== undefined && value !== null) {
+				urlParams.set(key, value.toString())
+			}
+		})
+
+		const newUrl = `${window.location.pathname}?${urlParams.toString()}`
+		window.history.pushState(null, '', newUrl)
 	}
 }
 

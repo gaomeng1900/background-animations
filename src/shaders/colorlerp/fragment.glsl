@@ -22,15 +22,20 @@ void main() {
 
 	if(uPercent < 0.5) {
 		// First half: transition from pair1 to pair2
-		factor1 = 1.0 - (uPercent * 2.0);
-		factor2 = uPercent * 2.0;
+		// factor1 = 1.0 - (uPercent * 2.0);
+		// factor2 = uPercent * 2.0;
+		factor2 = smoothstep(0.3, 0.4, uPercent); // Smooth transition
+		factor1 = 1.0 - factor2;
+
 		factor3 = 0.0;
 	} else {
 		// Second half: transition from pair2 to pair3
-		float t = (uPercent - 0.5) * 2.0;
 		factor1 = 0.0;
-		factor2 = 1.0 - t;
-		factor3 = t;
+		// float t = (uPercent - 0.5) * 2.0;
+		// factor2 = 1.0 - t;
+		// factor3 = t;
+		factor3 = smoothstep(0.6, 0.7, uPercent); // Smooth transition
+		factor2 = 1.0 - factor3;
 	}
 
 	// Scale UV coordinates for better noise patterns
@@ -42,17 +47,17 @@ void main() {
 
 	// Generate noise for each pair with different offsets and amplitudes
 	float noise1 = cnoise(noiseInput + vec4(0.0, 0.0, 0.0, 0.0)) * 0.8;
-	float noise2 = cnoise(noiseInput + vec4(100.0, 100.0, 10.0, 0.0)) * 0.8;
-	float noise3 = cnoise(noiseInput + vec4(200.0, 200.0, 20.0, 0.0)) * 0.8;
-
 	// Convert noise from [-0.8,0.8] to [0.1,0.9] range for better mixing
 	float mixFactor1 = noise1 * 0.4 + 0.5;
-	float mixFactor2 = noise2 * 0.4 + 0.5;
-	float mixFactor3 = noise3 * 0.4 + 0.5;
-
 	// Mix colors within each pair using noise
 	vec3 color1 = mix(uColor1, uColor2, mixFactor1);
+
+	float noise2 = cnoise(noiseInput + vec4(100.0, 100.0, 10.0, 0.0)) * 0.8;
+	float mixFactor2 = noise2 * 0.4 + 0.5;
 	vec3 color2 = mix(uColor3, uColor4, mixFactor2);
+
+	float noise3 = cnoise(noiseInput + vec4(200.0, 200.0, 20.0, 0.0)) * 0.8;
+	float mixFactor3 = noise3 * 0.4 + 0.5;
 	vec3 color3 = mix(uColor5, uColor6, mixFactor3);
 
 	// Final color is weighted sum of all three pairs
