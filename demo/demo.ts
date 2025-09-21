@@ -201,6 +201,27 @@ class Demo {
 			}
 		}
 
+		if (config.name === 'Color Lerp') {
+			return {
+				pairs: [
+					[
+						this.hexToRgb(this.state.parameters.pair1Color1 || '#ff0000'),
+						this.hexToRgb(this.state.parameters.pair1Color2 || '#ff6464'),
+					],
+					[
+						this.hexToRgb(this.state.parameters.pair2Color1 || '#00ff00'),
+						this.hexToRgb(this.state.parameters.pair2Color2 || '#64ff64'),
+					],
+					[
+						this.hexToRgb(this.state.parameters.pair3Color1 || '#0000ff'),
+						this.hexToRgb(this.state.parameters.pair3Color2 || '#6464ff'),
+					],
+				] as [[string, string], [string, string], [string, string]],
+				percent: parseFloat(this.state.parameters.percent || '0.0'),
+				pointer: [0.5, 0.5] as [number, number],
+			}
+		}
+
 		return config.defaultOptions
 	}
 
@@ -285,9 +306,39 @@ class Demo {
 	}
 
 	private updateEffect(): void {
-		if (!this.state.currentEffect) return
+		if (!this.state.currentEffect || !this.state.currentInstance) return
 
-		// Recreate effect with new parameters
+		// For ColorLerpEffect, we can update parameters without recreating
+		if (
+			this.state.currentEffect.name === 'Color Lerp' &&
+			this.state.currentInstance.setPercent &&
+			this.state.currentInstance.setColors
+		) {
+			const percent = parseFloat(this.state.parameters.percent || '0.0')
+			this.state.currentInstance.setPercent(percent)
+
+			// Update colors
+			const pairs: [[string, string], [string, string], [string, string]] = [
+				[
+					this.hexToRgb(this.state.parameters.pair1Color1 || '#ff0000'),
+					this.hexToRgb(this.state.parameters.pair1Color2 || '#ff6464'),
+				],
+				[
+					this.hexToRgb(this.state.parameters.pair2Color1 || '#00ff00'),
+					this.hexToRgb(this.state.parameters.pair2Color2 || '#64ff64'),
+				],
+				[
+					this.hexToRgb(this.state.parameters.pair3Color1 || '#0000ff'),
+					this.hexToRgb(this.state.parameters.pair3Color2 || '#6464ff'),
+				],
+			]
+			this.state.currentInstance.setColors(pairs)
+
+			this.renderCode(this.state.currentEffect)
+			return
+		}
+
+		// For other effects, recreate effect with new parameters
 		this.renderMainPreview(this.state.currentEffect)
 		this.renderCode(this.state.currentEffect)
 	}
