@@ -16,7 +16,7 @@
 		"types": [],
 		"declaration": true,
 		"declarationMap": true,
-		"sourceMap": true,
+		"sourceMap": false,
 		"outDir": "build"
 	},
 	"include": ["src/**/*.ts"],

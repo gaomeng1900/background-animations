@@ -115,6 +115,10 @@ export class ColorLerpEffect extends BackgroundEffect {
 		}
 	}
 
+	updatePercent(percent: number): void {
+		this.percent = Math.max(0, Math.min(1, percent))
+	}
+
 	protected override updateUniforms(time: number): void {
 		// Smooth pointer interpolation
 		this.pointer[0] = this.pointer[0] + (this.targetPointer[0] - this.pointer[0]) * 0.1
