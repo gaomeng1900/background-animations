@@ -81,7 +81,9 @@ class Demo {
 
 	private createMiniPreview(config: EffectConfig, container: HTMLElement): void {
 		try {
-			const options = config.defaultOptions || {}
+			const defaults = this.getDefaultParameters(config)
+			this.state.parameters = defaults
+			const options = this.buildEffectOptions(config)
 			const effect = new config.class(options)
 
 			container.appendChild(effect.element)
@@ -192,37 +194,39 @@ class Demo {
 		}
 
 		if (config.name === 'Gradient') {
+			const defaults = this.getDefaultParameters(config)
 			return {
 				pairs: [
 					[
-						this.hexToRgb(this.state.parameters.pair1Color1 || '#ff0000'),
-						this.hexToRgb(this.state.parameters.pair1Color2 || '#00ff00'),
+						this.hexToRgb(this.state.parameters.pair1Color1 ?? defaults.pair1Color1),
+						this.hexToRgb(this.state.parameters.pair1Color2 ?? defaults.pair1Color2),
 					],
 					[
-						this.hexToRgb(this.state.parameters.pair2Color1 || '#0000ff'),
-						this.hexToRgb(this.state.parameters.pair2Color2 || '#ffff00'),
+						this.hexToRgb(this.state.parameters.pair2Color1 ?? defaults.pair2Color1),
+						this.hexToRgb(this.state.parameters.pair2Color2 ?? defaults.pair2Color2),
 					],
 				] as [[string, string], [string, string]],
 			}
 		}
 
 		if (config.name === 'Color Lerp') {
+			const defaults = this.getDefaultParameters(config)
 			return {
 				pairs: [
 					[
-						this.hexToRgb(this.state.parameters.pair1Color1 || '#ff0000'),
-						this.hexToRgb(this.state.parameters.pair1Color2 || '#ff6464'),
+						this.hexToRgb(this.state.parameters.pair1Color1 ?? defaults.pair1Color1),
+						this.hexToRgb(this.state.parameters.pair1Color2 ?? defaults.pair1Color2),
 					],
 					[
-						this.hexToRgb(this.state.parameters.pair2Color1 || '#00ff00'),
-						this.hexToRgb(this.state.parameters.pair2Color2 || '#64ff64'),
+						this.hexToRgb(this.state.parameters.pair2Color1 ?? defaults.pair2Color1),
+						this.hexToRgb(this.state.parameters.pair2Color2 ?? defaults.pair2Color2),
 					],
 					[
-						this.hexToRgb(this.state.parameters.pair3Color1 || '#0000ff'),
-						this.hexToRgb(this.state.parameters.pair3Color2 || '#6464ff'),
+						this.hexToRgb(this.state.parameters.pair3Color1 ?? defaults.pair3Color1),
+						this.hexToRgb(this.state.parameters.pair3Color2 ?? defaults.pair3Color2),
 					],
 				] as [[string, string], [string, string], [string, string]],
-				percent: parseFloat(this.state.parameters.percent || '0.0'),
+				percent: parseFloat(this.state.parameters.percent ?? defaults.percent ?? '0.0'),
 				pointer: [0.5, 0.5] as [number, number],
 			}
 		}
@@ -367,17 +371,6 @@ class Demo {
 		if (effectName) {
 			const config = effectsConfig.find((c) => c.name === effectName)
 			if (config) {
-				// Load parameters from URL
-				const urlParameters: Record<string, any> = {}
-				config.parameters?.forEach((param) => {
-					const value = urlParams.get(param.name)
-					if (value !== null) {
-						urlParameters[param.name] = value
-					}
-				})
-
-				// Override default parameters with URL parameters
-				this.state.parameters = { ...this.getDefaultParameters(config), ...urlParameters }
 				this.selectEffect(config)
 				return
 			}
@@ -394,13 +387,6 @@ class Demo {
 
 		const urlParams = new URLSearchParams()
 		urlParams.set('effect', this.state.currentEffect.name)
-
-		// Add effect parameters to URL
-		Object.entries(this.state.parameters).forEach(([key, value]) => {
-			if (value !== undefined && value !== null) {
-				urlParams.set(key, value.toString())
-			}
-		})
 
 		const newUrl = `${window.location.pathname}?${urlParams.toString()}`
 		window.history.pushState(null, '', newUrl)

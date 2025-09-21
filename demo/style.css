@@ -254,7 +254,7 @@ body {
 }
 
 .preview-container {
-	background: var(--code-bg);
+	/* background: var(--code-bg); */
 	border-radius: 12px;
 	aspect-ratio: 3/2;
 	position: relative;

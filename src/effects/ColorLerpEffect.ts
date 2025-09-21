@@ -36,6 +36,7 @@ export class ColorLerpEffect extends BackgroundEffect {
 	private colors: [number, number, number][]
 	private percent: number
 	private pointer: [number, number]
+	private targetPointer: [number, number]
 	private pointerListener?: (e: MouseEvent) => void
 
 	constructor(options: ColorLerpOptions) {
@@ -53,6 +54,7 @@ export class ColorLerpEffect extends BackgroundEffect {
 
 		this.percent = options.percent ?? 0.0
 		this.pointer = options.pointer ?? [0.5, 0.5]
+		this.targetPointer = [...this.pointer]
 
 		// Get uniform locations
 		this.uColor1 = this.gl.getUniformLocation(this.program, 'uColor1')
@@ -75,7 +77,7 @@ export class ColorLerpEffect extends BackgroundEffect {
 			const rect = this.element.getBoundingClientRect()
 			const x = (e.clientX - rect.left) / rect.width
 			const y = 1.0 - (e.clientY - rect.top) / rect.height // Flip Y for WebGL
-			this.pointer = [Math.max(0, Math.min(1, x)), Math.max(0, Math.min(1, y))]
+			this.targetPointer = [Math.max(0, Math.min(1, x)), Math.max(0, Math.min(1, y))]
 		}
 	}
 
@@ -109,10 +111,15 @@ export class ColorLerpEffect extends BackgroundEffect {
 		}
 		if (options.pointer) {
 			this.pointer = options.pointer
+			this.targetPointer = [...this.pointer]
 		}
 	}
 
 	protected override updateUniforms(time: number): void {
+		// Smooth pointer interpolation
+		this.pointer[0] = this.pointer[0] + (this.targetPointer[0] - this.pointer[0]) * 0.1
+		this.pointer[1] = this.pointer[1] + (this.targetPointer[1] - this.pointer[1]) * 0.1
+
 		// Set color uniforms
 		if (this.uColor1) this.gl.uniform3f(this.uColor1, ...this.colors[0])
 		if (this.uColor2) this.gl.uniform3f(this.uColor2, ...this.colors[1])
