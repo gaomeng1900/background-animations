@@ -126,6 +126,9 @@ export abstract class BackgroundEffect {
 	// Hook for subclasses to update their custom uniforms
 	protected updateUniforms(time: number): void {}
 
+	// Hook for subclasses to update their options dynamically
+	updateOptions(options: any): void {}
+
 	private setupGeometry(): void {
 		const { positions, uvs } = createPlaneGeometry()
 

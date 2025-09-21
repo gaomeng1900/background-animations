@@ -5,14 +5,50 @@
  * @license MIT
  * @repository https://github.com/gaomeng1900/background-animations
  */
+import { existsSync, readFileSync } from 'fs'
+import { dirname, resolve } from 'path'
 import type { Plugin } from 'vite'
 
 /**
  * Vite plugin to load GLSL files as string modules.
- * Supports .glsl file extensions.
+ * Supports .glsl file extensions and #include directives.
  */
 export function glslLoaderPlugin(): Plugin {
 	const extensions = ['.glsl']
+
+	/**
+	 * Recursively process #include directives in GLSL source
+	 */
+	function processIncludes(
+		source: string,
+		currentPath: string,
+		processedFiles = new Set<string>()
+	): string {
+		// Avoid circular includes
+		if (processedFiles.has(currentPath)) {
+			throw new Error(`Circular include detected: ${currentPath}`)
+		}
+		processedFiles.add(currentPath)
+
+		// Match #include directives with both angle brackets and quotes
+		const includeRegex = /#include\s+[<"']([^<>"']+)[>"']/g
+
+		return source.replace(includeRegex, (_, includePath) => {
+			// Resolve the include path relative to current file
+			const resolvedPath = resolve(dirname(currentPath), includePath)
+
+			// Check if file exists
+			if (!existsSync(resolvedPath)) {
+				throw new Error(`Include file not found: ${includePath} (resolved to: ${resolvedPath})`)
+			}
+
+			// Read and process the included file
+			const includeSource = readFileSync(resolvedPath, 'utf-8')
+
+			// Recursively process includes in the included file
+			return processIncludes(includeSource, resolvedPath, new Set(processedFiles))
+		})
+	}
 
 	return {
 		name: 'glsl-loader',
@@ -28,18 +64,27 @@ export function glslLoaderPlugin(): Plugin {
 		transform(src: string, id: string) {
 			// Transform GLSL files to ES modules
 			if (extensions.some((ext) => id.endsWith(ext))) {
-				// Minify the GLSL source by removing comments and unnecessary whitespace
-				const minified = src
-					.replace(/\/\*[\s\S]*?\*\//g, '') // Remove block comments
-					.replace(/\/\/.*$/gm, '') // Remove line comments
-					.replace(/^\s+/gm, '') // Remove leading whitespace
-					.replace(/\s+$/gm, '') // Remove trailing whitespace
-					.replace(/\n\s*\n/g, '\n') // Remove empty lines
-					.trim()
+				try {
+					// Process #include directives first
+					const processedSource = processIncludes(src, id)
 
-				return {
-					code: `export default \`${minified}\`;`,
-					map: null, // No source map
+					// Minify the GLSL source by removing comments and unnecessary whitespace
+					const minified = processedSource
+						.replace(/\/\*[\s\S]*?\*\//g, '') // Remove block comments
+						.replace(/\/\/.*$/gm, '') // Remove line comments
+						.replace(/^\s+/gm, '') // Remove leading whitespace
+						.replace(/\s+$/gm, '') // Remove trailing whitespace
+						.replace(/\n\s*\n/g, '\n') // Remove empty lines
+						.trim()
+
+					return {
+						code: `export default \`${minified}\`;`,
+						map: null, // No source map
+					}
+				} catch (error) {
+					// Provide helpful error messages for include issues
+					const message = error instanceof Error ? error.message : String(error)
+					this.error(`GLSL include error in ${id}: ${message}`)
 				}
 			}
 		},

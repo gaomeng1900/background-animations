@@ -36,6 +36,7 @@ export class ColorLerpEffect extends BackgroundEffect {
 	private colors: [number, number, number][]
 	private percent: number
 	private pointer: [number, number]
+	private pointerListener?: (e: MouseEvent) => void
 
 	constructor(options: ColorLerpOptions) {
 		super(colorlerpVertexShader, colorlerpFragmentShader)
@@ -62,25 +63,53 @@ export class ColorLerpEffect extends BackgroundEffect {
 		this.uColor6 = this.gl.getUniformLocation(this.program, 'uColor6')
 		this.uPercent = this.gl.getUniformLocation(this.program, 'uPercent')
 		this.uPointer = this.gl.getUniformLocation(this.program, 'uPointer')
+
+		this.setupPointerTracking()
+
+		// Enable pointer events for this effect
+		this.element.style.pointerEvents = 'auto'
 	}
 
-	setPercent(value: number): void {
-		this.percent = Math.max(0, Math.min(1, value))
+	private setupPointerTracking(): void {
+		this.pointerListener = (e: MouseEvent) => {
+			const rect = this.element.getBoundingClientRect()
+			const x = (e.clientX - rect.left) / rect.width
+			const y = 1.0 - (e.clientY - rect.top) / rect.height // Flip Y for WebGL
+			this.pointer = [Math.max(0, Math.min(1, x)), Math.max(0, Math.min(1, y))]
+		}
 	}
 
-	setPointer(x: number, y: number): void {
-		this.pointer = [x, y]
+	override start(): void {
+		super.start()
+		if (this.pointerListener) {
+			this.element.addEventListener('mousemove', this.pointerListener)
+		}
 	}
 
-	setColors(pairs: [[string, string], [string, string], [string, string]]): void {
-		this.colors = [
-			parseColor(pairs[0][0]), // First pair, first color
-			parseColor(pairs[0][1]), // First pair, second color
-			parseColor(pairs[1][0]), // Second pair, first color
-			parseColor(pairs[1][1]), // Second pair, second color
-			parseColor(pairs[2][0]), // Third pair, first color
-			parseColor(pairs[2][1]), // Third pair, second color
-		]
+	override dispose(): void {
+		if (this.pointerListener) {
+			this.element.removeEventListener('mousemove', this.pointerListener)
+		}
+		super.dispose()
+	}
+
+	override updateOptions(options: Partial<ColorLerpOptions>): void {
+		if (options.pairs) {
+			this.colors = [
+				parseColor(options.pairs[0][0]), // First pair, first color
+				parseColor(options.pairs[0][1]), // First pair, second color
+				parseColor(options.pairs[1][0]), // Second pair, first color
+				parseColor(options.pairs[1][1]), // Second pair, second color
+				parseColor(options.pairs[2][0]), // Third pair, first color
+				parseColor(options.pairs[2][1]), // Third pair, second color
+			]
+		}
+		if (options.percent !== undefined) {
+			this.percent = Math.max(0, Math.min(1, options.percent))
+		}
+		if (options.pointer) {
+			this.pointer = options.pointer
+		}
 	}
 
 	protected override updateUniforms(time: number): void {

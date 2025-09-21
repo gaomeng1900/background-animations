@@ -1,5 +1,6 @@
 #version 300 es
 precision lowp float;
+#include <../utils/noise.glsl>
 
 in vec2 vUV;
 out vec4 outColor;

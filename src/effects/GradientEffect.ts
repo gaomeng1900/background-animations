@@ -46,6 +46,17 @@ export class GradientEffect extends BackgroundEffect {
 		this.uColor4 = this.gl.getUniformLocation(this.program, 'uColor4')
 	}
 
+	override updateOptions(options: Partial<GradientOptions>): void {
+		if (options.pairs) {
+			this.colors = [
+				parseColor(options.pairs[0][0]), // First pair, first color
+				parseColor(options.pairs[0][1]), // First pair, second color
+				parseColor(options.pairs[1][0]), // Second pair, first color
+				parseColor(options.pairs[1][1]), // Second pair, second color
+			]
+		}
+	}
+
 	protected override updateUniforms(time: number): void {
 		// Set color uniforms each frame (they're static but need to be set when program is active)
 		if (this.uColor1) this.gl.uniform3f(this.uColor1, ...this.colors[0])
