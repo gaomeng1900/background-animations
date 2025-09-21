@@ -122,13 +122,13 @@ void main() {
 	float factorPointer = 1.0 - smoothstep(0.0, 0.4, disToPointer);
 
 	// Create 4D noise input: scaled uv + pointer, time, percent
-	vec4 noiseInput = vec4(scaledUV - scaledPointer, uTime * 0.9, uPercent * 5.0);
+	// vec4 noiseInput = vec4(scaledUV - scaledPointer, uTime * 0.9, uPercent * 5.0);
 
 	// 1
 
 	// Generate noise for each pair with different offsets and amplitudes
-	float noise1 = snoise(vec4(scaledUV - scaledPointer, uTime * 0.9, uPercent * 50.0) * 0.3);
-	float mixFactor1 = noise1 * 0.5 + 0.4 + factorPointer;
+	float noise1 = snoise(vec4(scaledUV * 0.7 - scaledPointer, uTime * 0.9, uPercent * 50.0) * 0.3);
+	float mixFactor1 = noise1 * 0.8 + 0.4 + factorPointer;
 	mixFactor1 = fullScreenMask(mixFactor1);
 	// Mix colors within each pair using noise
 	// vec3 color1 = mix(uColor1, uColor2, mixFactor1);
@@ -141,7 +141,7 @@ void main() {
 	// float noise2 = cellular2x2x2(noiseInput2).x;
 	// float mixFactor2 = noise2 * 0.8 + 0.0 + factorPointer * 0.7;
 	// noise2 = smoothstep(0.3, 1.0, 1.0 - noise2);
-	float noise2 = worley(noiseInput2, uPercent * 0.5, false).x;
+	float noise2 = worley(noiseInput2, uPercent * 0.8, false).x;
 	float mixFactor2 = noise2 * 0.4 + 0.0 + factorPointer * 0.7;
 	mixFactor2 = fullScreenMask(mixFactor2);
 	// vec4 color2 = mixColorsLinear(vec4(0.0), vec4(uColor3, 1.0), vec4(uColor4, 1.0), mixFactor2);

@@ -73,7 +73,7 @@ export const effectsConfig: EffectConfig[] = [
 			{
 				name: 'percent',
 				type: 'number',
-				default: 1.0,
+				default: 0,
 				min: 0.0,
 				max: 1.0,
 				step: 0.01,
