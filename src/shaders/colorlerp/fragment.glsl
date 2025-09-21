@@ -141,7 +141,7 @@ void main() {
 	// float noise2 = cellular2x2x2(noiseInput2).x;
 	// float mixFactor2 = noise2 * 0.8 + 0.0 + factorPointer * 0.7;
 	// noise2 = smoothstep(0.3, 1.0, 1.0 - noise2);
-	float noise2 = worley(noiseInput2, uPercent * 0.8, false).x;
+	float noise2 = worley(noiseInput2, uPercent * 0.8, false).x + noise1;
 	float mixFactor2 = noise2 * 0.4 + 0.0 + factorPointer * 0.7;
 	mixFactor2 = fullScreenMask(mixFactor2);
 	// vec4 color2 = mixColorsLinear(vec4(0.0), vec4(uColor3, 1.0), vec4(uColor4, 1.0), mixFactor2);
@@ -155,9 +155,9 @@ void main() {
 
 	// vec3 noiseInput3 = vec3(scaledUV * 0.1 - scaledPointer * 0.1, uTime * 0.03 + uPercent * 0.9);
 	// float noise3 = fbm(noiseInput3);
-	vec4 noiseInput3 = vec4(scaledUV * 0.1 - scaledPointer * 0.1, uTime * 0.03, uPercent * 0.4);
+	vec4 noiseInput3 = vec4(scaledUV * 0.1 - scaledPointer * 0.1, uTime * 0.03, uPercent * 0.2);
 	float noise3 = pattern(noiseInput3);
-	float mixFactor3 = noise3 * 0.9 + 0.1 + factorPointer * 0.5;
+	float mixFactor3 = noise3 * 0.9 + 0.1 + factorPointer * 0.8;
 	mixFactor3 = fullScreenMask(mixFactor3);
 	vec4 color3 = mixColorsTransparent(uColor5, uColor6, mixFactor3);
 
