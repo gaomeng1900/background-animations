@@ -58,7 +58,7 @@ export abstract class BackgroundEffect {
 			const delta = now - this.lastTime
 
 			// Limit to 30fps for better performance
-			if (delta < 1000 / 30) return
+			if (delta < 1000 / 33) return
 
 			this.lastTime = now
 			const t = (now - this.startTime) * 0.001
