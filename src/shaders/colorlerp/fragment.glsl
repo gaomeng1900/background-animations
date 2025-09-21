@@ -127,7 +127,7 @@ void main() {
 	// 1
 
 	// Generate noise for each pair with different offsets and amplitudes
-	float noise1 = snoise(vec4(scaledUV * 0.7 - scaledPointer, uTime * 0.9, uPercent * 50.0) * 0.3);
+	float noise1 = snoise(vec4(scaledUV * 0.7 - scaledPointer, uTime * 0.9, uPercent * 5.0) * 0.3);
 	float mixFactor1 = noise1 * 0.8 + 0.4 + factorPointer;
 	mixFactor1 = fullScreenMask(mixFactor1);
 	// Mix colors within each pair using noise
@@ -137,7 +137,7 @@ void main() {
 
 	// 2
 
-	vec3 noiseInput2 = vec3(scaledUV * 0.7 - scaledPointer * 0.5, uTime * 0.1 + uPercent * 5.0);
+	vec3 noiseInput2 = vec3(scaledUV * 0.7 - scaledPointer * 0.5, uTime * 0.6 + uPercent * 5.0);
 	// float noise2 = cellular2x2x2(noiseInput2).x;
 	// float mixFactor2 = noise2 * 0.8 + 0.0 + factorPointer * 0.7;
 	// noise2 = smoothstep(0.3, 1.0, 1.0 - noise2);
@@ -155,7 +155,7 @@ void main() {
 
 	// vec3 noiseInput3 = vec3(scaledUV * 0.1 - scaledPointer * 0.1, uTime * 0.03 + uPercent * 0.9);
 	// float noise3 = fbm(noiseInput3);
-	vec4 noiseInput3 = vec4(scaledUV * 0.1 - scaledPointer * 0.1, uTime * 0.03, uPercent * 0.9);
+	vec4 noiseInput3 = vec4(scaledUV * 0.1 - scaledPointer * 0.1, uTime * 0.03, uPercent * 0.4);
 	float noise3 = pattern(noiseInput3);
 	float mixFactor3 = noise3 * 0.9 + 0.1 + factorPointer * 0.5;
 	mixFactor3 = fullScreenMask(mixFactor3);
