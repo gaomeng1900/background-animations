@@ -172,7 +172,7 @@ void main() {
 
 	// Add film grain noise for texture
 	vec2 grainUV = vUV * uResolution.xy; // High frequency for fine grain
-	float grain = (random(grainUV + uTime) - 0.5) * 0.05;
+	float grain = (random(grainUV + uTime) - 0.5) * 0.02;
 	finalColor.rgb += grain;
 
 	// mask

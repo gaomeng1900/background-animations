@@ -57,8 +57,8 @@ export abstract class BackgroundEffect {
 			const now = performance.now()
 			const delta = now - this.lastTime
 
-			// Limit to reasonable frame rate
-			if (delta < 1000 / 60) return
+			// Limit to 30fps for better performance
+			if (delta < 1000 / 30) return
 
 			this.lastTime = now
 			const t = (now - this.startTime) * 0.001
@@ -96,7 +96,7 @@ export abstract class BackgroundEffect {
 	resize(width: number, height: number, ratio?: number): void {
 		if (this.disposed) throw new Error('BackgroundEffect instance has been disposed.')
 
-		const dpr = ratio ?? window.devicePixelRatio ?? 1
+		const dpr = ratio ?? 0.5
 		const desiredWidth = Math.max(1, Math.floor(width * dpr))
 		const desiredHeight = Math.max(1, Math.floor(height * dpr))
 
