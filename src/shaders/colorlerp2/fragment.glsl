@@ -28,11 +28,18 @@ vec4 mixColorsTransparent(vec3 colorA, vec3 colorB, float factor) {
 }
 
 float fullScreenMask(float value) {
-	float base = smoothstep(-1.2, 1.0, vUV.x - vUV.y * 2.4) * 0.4 - 0.2;
+	// float base = smoothstep(-1.2, 1.0, vUV.x - vUV.y * 2.4) * 0.4 - 0.2;
+	float base = smoothstep(0.5, 0.9, 1.0 - vUV.y) * 0.1;
+
+	// float mid = smoothstep(0.0, 0.3, vUV.x) * smoothstep(0.0, 0.3, 1.0 - vUV.x) * 0.5 + 0.5;
 
 	// return base;
 
-	float mask = smoothstep(-1.2, 1.0, vUV.x - vUV.y * 1.1);
+	// float mask = smoothstep(0.0, 0.9, 1.0 - vUV.y);
+
+	// mask *= mid;
+
+	float mask = smoothstep(-0.1, 1.0, 1.0 - distance(vUV, vec2(0.5, 0.0)));
 
 	return clamp(value * mask + base, 0.0, 1.0);
 }
@@ -74,10 +81,19 @@ void main() {
 	vec3 colorB = uColor2 * factor1 + uColor4 * factor2 + uColor6 * factor3;
 
 	// Generate noise for each pair with different offsets and amplitudes
-	float noise1 = snoise(vec4((vUV * 1.3 - uPointer * 0.7) * vec2(1.0, 1.1), uTime * 0.3, uPercent * 2.0));
-	float mixFactor1 = noise1 * 0.8 + 0.4 + factorPointer;
+	float noise1 = snoise(vec4((vUV * 1.0 - uPointer * 0.8) * vec2(1.0, 1.5), uTime * 0.2 + 0.3, uPercent * 1.0));
+	float mixFactor1 = noise1 * 0.6 + 0.6 + factorPointer * 0.5;
+	// float mixFactor1 = noise1 * 0.6 + 0.2;
 	mixFactor1 = fullScreenMask(mixFactor1);
 	vec4 finalColor = mixColorsTransparent(colorA, colorB, mixFactor1);
+
+	// float noise2 = snoise(vec4((vUV * 0.8 - uPointer * 0.7) * vec2(1.0, 1.2) + vec2(0.5, 0.3), uTime * 0.2, uPercent * 2.0));
+	// float mixFactor2 = noise2 * 0.5 + 0.1 + factorPointer * 0.5;
+	// mixFactor2 = fullScreenMask(mixFactor2);
+
+	// mixFactor1 *= 1.0;
+	// mixFactor2 *= 1.0;
+	// vec4 finalColor = vec4(colorA * mixFactor1 + colorB * mixFactor2, mixFactor1 + mixFactor2);
 
 	// Add film grain noise for texture
 	vec2 grainUV = vUV * uResolution.xy; // High frequency for fine grain
