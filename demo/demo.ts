@@ -209,7 +209,7 @@ class Demo {
 			}
 		}
 
-		if (config.name === 'Color Lerp') {
+		if (config.name === 'Color Lerp' || config.name === 'Color Lerp 2') {
 			const defaults = this.getDefaultParameters(config)
 			return {
 				pairs: [
@@ -243,6 +243,17 @@ class Demo {
 		const b = parseInt(result[3], 16)
 
 		return `rgb(${r}, ${g}, ${b})`
+	}
+
+	private rgbToHex(rgb: string): string {
+		const match = rgb.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/)
+		if (!match) return '#000000'
+
+		const r = parseInt(match[1])
+		const g = parseInt(match[2])
+		const b = parseInt(match[3])
+
+		return '#' + [r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('')
 	}
 
 	private renderControls(config: EffectConfig): void {
@@ -338,7 +349,17 @@ class Demo {
 		if (!this.elements.codeContainer) return
 
 		const options = this.buildEffectOptions(config)
-		const code = getEffectUsageCode(config, options)
+
+		// Convert rgb colors back to hex for code display
+		const codeOptions = { ...options }
+		if (codeOptions.pairs) {
+			codeOptions.pairs = codeOptions.pairs.map((pair: [string, string]) => [
+				this.rgbToHex(pair[0]),
+				this.rgbToHex(pair[1]),
+			])
+		}
+
+		const code = getEffectUsageCode(config, codeOptions)
 
 		this.elements.codeContainer.innerHTML = `
 			<div class="code-header">

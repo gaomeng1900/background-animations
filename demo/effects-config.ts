@@ -1,7 +1,7 @@
 /**
  * Configuration for all available effects in the demo
  */
-import { ColorLerpEffect, GradientEffect, UVMapEffect } from '../src/index'
+import { ColorLerp2Effect, ColorLerpEffect, GradientEffect, UVMapEffect } from '../src/index'
 
 export interface EffectConfig {
 	name: string
@@ -77,7 +77,65 @@ export const effectsConfig: EffectConfig[] = [
 				min: 0.0,
 				max: 1.0,
 				step: 0.01,
-				description: 'Interpolation between color pairs',
+				description: 'Percent progress',
+			},
+			{
+				name: 'pair1Color1',
+				type: 'color',
+				default: '#3BA9DE',
+				description: 'First color',
+				group: 'Pair 1',
+			},
+			{
+				name: 'pair1Color2',
+				type: 'color',
+				default: '#8f5ff7',
+				description: 'Second color',
+				group: 'Pair 1',
+			},
+			{
+				name: 'pair2Color1',
+				type: 'color',
+				default: '#4a7cd9',
+				description: 'First color',
+				group: 'Pair 2',
+			},
+			{
+				name: 'pair2Color2',
+				type: 'color',
+				default: '#a723e8',
+				description: 'Second color',
+				group: 'Pair 2',
+			},
+			{
+				name: 'pair3Color1',
+				type: 'color',
+				default: '#f78c63',
+				description: 'First color',
+				group: 'Pair 3',
+			},
+			{
+				name: 'pair3Color2',
+				type: 'color',
+				default: '#d11d28',
+				description: 'Second color',
+				group: 'Pair 3',
+			},
+		],
+	},
+	{
+		name: 'Color Lerp 2',
+		description: 'Copy of color lerp effect for customization experiments.',
+		class: ColorLerp2Effect,
+		parameters: [
+			{
+				name: 'percent',
+				type: 'number',
+				default: 0,
+				min: 0.0,
+				max: 1.0,
+				step: 0.01,
+				description: 'Percent progress',
 			},
 			{
 				name: 'pair1Color1',
@@ -155,7 +213,7 @@ effect.resize(400, 300)
 effect.start()`
 	}
 
-	if (config.name === 'Color Lerp') {
+	if (config.name === 'Color Lerp' || config.name === 'Color Lerp 2') {
 		const pairs = options?.pairs || []
 		const pairStrings = pairs
 			.map((pair: [string, string]) => `['${pair[0]}', '${pair[1]}']`)
