@@ -1,7 +1,12 @@
 /**
  * Configuration for all available effects in the demo
  */
-import { ColorLerp2Effect, ColorLerpEffect, GradientEffect, UVMapEffect } from '../src/index'
+import {
+	ColorLerp2Effect,
+	ColorLerpEffect,
+	GradientEffect,
+	UVMapEffect,
+} from 'background-animations'
 
 export interface EffectConfig {
 	name: string
