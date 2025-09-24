@@ -57,7 +57,7 @@ void main() {
 		// First half: transition from pair1 to pair2
 		// factor1 = 1.0 - (uPercent * 2.0);
 		// factor2 = uPercent * 2.0;
-		factor2 = smoothstep(0.3, 0.4, uPercent); // Smooth transition
+		factor2 = smoothstep(0.3, 0.3666, uPercent); // Smooth transition around 0.3333
 		factor1 = 1.0 - factor2;
 
 		factor3 = 0.0;
@@ -67,7 +67,7 @@ void main() {
 		// float t = (uPercent - 0.5) * 2.0;
 		// factor2 = 1.0 - t;
 		// factor3 = t;
-		factor3 = smoothstep(0.6, 0.7, uPercent); // Smooth transition
+		factor3 = smoothstep(0.6333, 0.7, uPercent); // Smooth transition around 0.6666
 		factor2 = 1.0 - factor3;
 	}
 
